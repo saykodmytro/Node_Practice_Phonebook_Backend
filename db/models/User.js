@@ -1,27 +1,33 @@
-import { string } from "joi";
 import { Schema, model } from "mongoose";
+import bcrypt from "bcrypt";
 
-const userShema = new Schema({
+const userShema = new Schema(
+  {
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     email: {
-        type: String, 
-        required: true,
+      type: String,
+      required: true,
     },
     password: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     token: {
-        type: String,
-        default: "",
+      type: String,
+      default: "",
     },
     avatar: {
-        type: String,
-    }
+      type: String,
+    },
+  },
+  { versionKey: false }
+);
 
-}, {versionKey:false})
+userShema.methods.hashPassword = async function () {
+  this.password = await bcrypt.hash(this.password, 10);
+};
 
-const User = model("user", userShema)
+export const User = model("user", userShema);
