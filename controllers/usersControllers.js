@@ -73,3 +73,19 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getCurrent = (req, res) => {
+  const { email, name, avatar } = req.user;
+  res.status(200).json({ email, name, avatar });
+};
+
+export const logout = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    await User.findByIdAndUpdate(_id, { token: "" });
+
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
