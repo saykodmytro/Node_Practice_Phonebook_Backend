@@ -2,6 +2,7 @@ import { User } from "../db/models/User.js";
 import HttpError from "../helpers/HttpError.js";
 import gravatar from "gravatar";
 import jwt from "jsonwebtoken";
+const { SECRET_KEY } = process.env;
 
 export const register = async (req, res, next) => {
   try {
@@ -22,8 +23,6 @@ export const register = async (req, res, next) => {
       id: newUser._id,
     };
 
-    const { SECRET_KEY } = process.env;
-
     const token = jwt.sign(payload, SECRET_KEY);
 
     await User.findOneAndUpdate(newUser._id, { token });
@@ -33,6 +32,41 @@ export const register = async (req, res, next) => {
         name,
         email,
         avatar,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw HttpError(401, "Email or password is wrong 1");
+    }
+
+    const passwordCorrect = await user.comparePassword(password);
+    if (!passwordCorrect) {
+      throw HttpError(401, "Email or password is wrong 2");
+    }
+
+    const payload = {
+      id: user._id,
+    };
+
+    const token = jwt.sign(payload, SECRET_KEY);
+
+    await User.findByIdAndUpdate(user._id, { token });
+
+    res.status(200).json({
+      token,
+      user: {
+        name: user.name,
+        email,
+        avatar: user.avatar,
       },
     });
   } catch (error) {

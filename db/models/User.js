@@ -30,4 +30,8 @@ userShema.methods.hashPassword = async function () {
   this.password = await bcrypt.hash(this.password, 10);
 };
 
+userShema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
 export const User = model("user", userShema);
