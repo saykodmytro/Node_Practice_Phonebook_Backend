@@ -20,7 +20,7 @@ contactsRouter.post(
   createContact
 );
 
-contactsRouter.delete("/:contactId", deleteContact);
+contactsRouter.delete("/:contactId", authentificate, deleteContact);
 
 contactsRouter.patch("/:contactId", updateContact);
 
