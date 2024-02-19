@@ -14,8 +14,11 @@ export const getAllContacts = async (req, res) => {
 
 export const createContact = async (req, res, next) => {
   try {
+    const usss = req.user;
+    console.log("usss: ", usss);
     const { _id: owner } = req.user;
     const result = await Contact.create({ ...req.body, owner });
+    console.log("result: ", result);
     res.status(201).json(result);
   } catch (error) {
     next(error);
