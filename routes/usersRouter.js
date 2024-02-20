@@ -4,6 +4,7 @@ import {
   login,
   logout,
   register,
+  updateAvatar,
 } from "../controllers/usersControllers.js";
 import { validateBody } from "../helpers/validateBody.js";
 import { authentificate } from "../middlewares/auth.js";
