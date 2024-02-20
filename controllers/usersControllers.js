@@ -2,6 +2,9 @@ import { User } from "../db/models/User.js";
 import HttpError from "../helpers/HttpError.js";
 import gravatar from "gravatar";
 import jwt from "jsonwebtoken";
+import path from "path";
+import fs from "fs/promises";
+
 const { SECRET_KEY } = process.env;
 
 export const register = async (req, res, next) => {
@@ -85,6 +88,27 @@ export const logout = async (req, res, next) => {
     await User.findByIdAndUpdate(_id, { token: "" });
 
     res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const { file } = req;
+
+    if (!file) {
+      throw HttpError(400, "You need file");
+    }
+
+    const { path: tempUpload, originalname } = file;
+    const newName = `${_id}${originalname}`;
+    const resultUpload = path.resolve("public", "avatars", newName);
+    await fs.rename(tempUpload, resultUpload);
+    const avatar = path.join("avatars", newName);
+    await User.findByIdAndUpdate(_id, { avatar }, { new: true });
+    res.status(200).json({ avatar });
   } catch (error) {
     next(error);
   }

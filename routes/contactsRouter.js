@@ -8,6 +8,7 @@ import {
 import { authentificate } from "../middlewares/auth.js";
 import { createContactSchema } from "../schemas/contactsSchemas.js";
 import { validateBody } from "../helpers/validateBody.js";
+import { isValidId } from "../middlewares/isValidId.js";
 
 const contactsRouter = express.Router();
 
@@ -20,7 +21,7 @@ contactsRouter.post(
   createContact
 );
 
-contactsRouter.delete("/:contactId", authentificate, deleteContact);
+contactsRouter.delete("/:contactId", authentificate, isValidId, deleteContact);
 
 contactsRouter.patch("/:contactId", updateContact);
 
